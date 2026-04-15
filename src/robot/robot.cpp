@@ -125,7 +125,7 @@ void Robot::print_status(uint32_t delay) {
     uint32_t fps = delay == 0 ? 0 : 1000000 / delay;
     serial_printf(
         DebugLevel::INFO,
-        "FPS: %lu (%luus)\n"
+        "FPS: %lu (%luus) WiFi status: %d -- connected: %d\n"
 
         "Position: (%fcm, %fcm) rotation: %frad \n"
         "Drive mode: %d Centering status: %d\n"
@@ -150,7 +150,7 @@ void Robot::print_status(uint32_t delay) {
         "    Left: %hd (disc %d), (held %d) (changed %lu)\n"
         "    Right: %hd (disc %d), (held %d) (changed %lu)\n\n",
 
-        fps, delay,
+        fps, delay, WiFi.status(), client.connected(),
 
         position.x, position.y, rotation,
         drive_mode, centeringStatus,

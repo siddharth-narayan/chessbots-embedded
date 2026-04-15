@@ -17,6 +17,7 @@ Robot robot;
 
 void setup() {
     WiFi.mode(WIFI_STA);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     
     if (LOGGING_LEVEL > 0) {
         Serial.begin(115200);
@@ -31,15 +32,16 @@ void loop() {
     previous_time = micros();
 
     connection_check_reconnect();
-
     auto packet = recv_packet();
-    handle_packet(robot, packet);
+    if (packet.has_value()) {
+        handle_packet(robot, packet.value());
+    }
     
     robot.tick(frame, delta);
 
     // center_test(robot);
     // line_test(robot);
-    square_test(robot);
+    // square_test(robot);
     // circle_test(robot);
 
     frame++;

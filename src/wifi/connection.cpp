@@ -15,18 +15,30 @@
 #endif
 
 WiFiClient client;
+u_int32_t last_connection_try_time;
+
+inline bool connected() {
+    return WiFi.status() == WL_CONNECTED && client.connected();
+}
 
 void connection_check_reconnect() {
-    if (WiFi.status() != WL_CONNECTED) {
+    u_int32_t delta_con_time = millis() - last_connection_try_time;
+    if (WiFi.status() != WL_CONNECTED && delta_con_time > 5000) {
         WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+        last_connection_try_time = millis();
     }
 
     if (!client.connected()) {
-        client.connect(SERVER_IP, SERVER_PORT);
+        bool res = client.connect(SERVER_IP, SERVER_PORT);
+        serial_printf(DebugLevel::NONE, "CLIENTCON: %d\n", res);
     }
 }
 
-JsonDocument recv_packet() {
+std::optional<JsonDocument> recv_packet() {
+    if (!connected()) {
+        return std::nullopt;
+    }
+
     int index = 0;
     char raw_packet[500];
     JsonDocument packet;
@@ -45,7 +57,7 @@ JsonDocument recv_packet() {
         
     deserializeJson(packet, raw_packet);
 
-    return packet;
+    return std::make_optional(packet);
 }
 
 // Sends a packet to the server

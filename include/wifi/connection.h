@@ -4,10 +4,12 @@
 #include <ArduinoJson.h>
 #include <WiFi.h>
 
+#include <optional>
+
 extern WiFiClient client;
 
 void connection_check_reconnect();
-JsonDocument recv_packet();
+std::optional<JsonDocument> recv_packet();
 
 void send_packet(JsonDocument packet);
 
