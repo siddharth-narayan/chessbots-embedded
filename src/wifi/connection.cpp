@@ -9,11 +9,29 @@
 #include "utils/logging.h"
 #include "wifi/packet.h"
 
-JsonDocument recv_packet(WiFiClient& client) {
+#if defined(ONLINE) \
+    && (!defined(WIFI_SSID) || !defined(WIFI_PASSWORD) || !defined(SERVER_IP) || !defined(SERVER_PORT))
+    #error ONLINE defined but one of (WIFI_SSID, WIFI_PASSWORD, SERVER_IP, SERVER_PORT) is not set
+#endif
+
+WiFiClient client;
+
+void connection_check_reconnect() {
+    if (WiFi.status() != WL_CONNECTED) {
+        WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    }
+
+    if (!client.connected()) {
+        client.connect(SERVER_IP, SERVER_PORT);
+    }
+}
+
+JsonDocument recv_packet() {
     int index = 0;
     char raw_packet[500];
     JsonDocument packet;
     
+    // Tries to read the whole packet in one go, might break if the underlying TCP packet is fragmented
     while (client.available()) {
         char data = client.read();
 
@@ -31,17 +49,22 @@ JsonDocument recv_packet(WiFiClient& client) {
 }
 
 // Sends a packet to the server
-void send_packet(WiFiClient& client, JsonDocument packet) {
-    // This takes that JSON object and sends it through the client's socket
+void send_packet(JsonDocument packet) {
     serializeJson(packet, client);
-
-    // Sends a delimiter character to mark the end of the packet
     client.write(';');
+}
+
+void send_success(std::string id) {
+    JsonDocument packet;
+    packet["type"] = "ACTION_SUCCESS";
+    packet["packetId"] = id;
+
+    send_packet(packet);
 }
 
 void send_ping() {
     JsonDocument packet;
-    packet["type"] = PING_RESPONSE;
+    packet["type"] = "PING_RESPONSE";
     packet["batteryLevel"] = Robot::batteryLevel();
 
     send_packet(packet);
