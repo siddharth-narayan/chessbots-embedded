@@ -60,6 +60,13 @@ bool handle_packet(Robot& r, JsonDocument packet) {
     ASSERT_FIELD(packet, "type", const char *)
 
     PacketType type = parse_packet_type(packet["type"].as<std::string>());
+
+    if (type == ERROR) {
+        return false;
+    }
+
+    serial_printf(DebugLevel::INFO, "Received a packet of type %d\n %s", type);
+
     if (type == SERVER_HELLO) {
         // When we initiate a handshake, the server sends a handshake back. This server handshake
         // contains any variable that should be changed in this bot's config
@@ -94,5 +101,5 @@ bool handle_packet(Robot& r, JsonDocument packet) {
         send_ping();
     }
 
-    return false;
+    return true;
 }

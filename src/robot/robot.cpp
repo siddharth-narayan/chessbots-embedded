@@ -92,7 +92,7 @@ std::tuple<double, double> MotionController::update_speeds(Coordinate2D position
 }
 
 void MotionController::print_status() {
-    serial_printf(DebugLevel::NONE, "MotionController status: %d\n  goal_angle: %f\n  goal_position: (%f, %f)", _phase, goal_angle, goal_position.x, goal_position.y);
+    serial_printf(DebugLevel::DEBUG, "MotionController status: %d\n  goal_angle: %f\n  goal_position: (%f, %f)", _phase, goal_angle, goal_position.x, goal_position.y);
 }
 
 void MotionController::reset() {
@@ -119,12 +119,13 @@ Robot::Robot()
 }
 
 void Robot::print_status(uint32_t delay) {
-    serial_clear();
     activateIR();
 
     uint32_t fps = delay == 0 ? 0 : 1000000 / delay;
     serial_printf(
-        DebugLevel::INFO,
+        DebugLevel::DEBUG,
+        
+        SERIAL_CLEAR
         "FPS: %lu (%luus) WiFi status: %d -- connected: %d\n"
 
         "Position: (%fcm, %fcm) rotation: %frad \n"

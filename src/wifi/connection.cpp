@@ -29,8 +29,9 @@ void connection_check_reconnect() {
     }
 
     if (!client.connected()) {
-        bool res = client.connect(SERVER_IP, SERVER_PORT);
-        serial_printf(DebugLevel::NONE, "CLIENTCON: %d\n", res);
+        if (client.connect(SERVER_IP, SERVER_PORT)) {
+            send_handshake();
+        }
     }
 }
 
@@ -64,6 +65,19 @@ std::optional<JsonDocument> recv_packet() {
 void send_packet(JsonDocument packet) {
     serializeJson(packet, client);
     client.write(';');
+}
+
+void send_handshake() {
+    uint8_t mac[8];
+    JsonDocument packet;    
+
+    esp_efuse_mac_get_default(mac);
+    auto stringMac = unint8ArrayToHexString(mac, 6);
+
+    packet["type"] = "CLIENT_HELLO";
+    packet["macAddress"] = stringMac;
+
+    send_packet(packet);
 }
 
 void send_success(std::string id) {
