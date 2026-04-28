@@ -8,7 +8,7 @@
 
 Motor::Motor(bool _inverted, int motor_pin_a, int motor_pin_b, uint8_t enc_pin_a, uint8_t enc_pin_b)
     :   inverted(_inverted),
-        speed_controller(1.0, 0.4, 0.0, -1, +1, 0.0),
+        speed_controller(0.1, 0.05, 0.0, -1, +1, 0.0),
         encoder(enc_pin_a, enc_pin_b)
     {
     pin_a = motor_pin_a;

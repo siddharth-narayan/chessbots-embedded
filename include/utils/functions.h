@@ -12,7 +12,7 @@ std::string unint8ArrayToHexString(uint8_t* oldArray, int len);
 
 class RingBuf {
 private:
-    std::array<double, 20> buf;
+    std::array<double, 50> buf;
     std::size_t head;
 
 public:

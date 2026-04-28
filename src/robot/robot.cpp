@@ -57,17 +57,17 @@ void Robot::print_status(uint32_t delay) {
 
         "Motors:\n"
         "  Left:\n"
-        "    power: %f (%d duty)\n"
-        "    speed: %fcm/s\n"
-        "    target speed: %fcm/s\n"
-        "    distance: %fcm (%d raw)\n"
-        "    saved: %fcm\n"
+        "    power: %+.2f (%d duty)\n"
+        "    speed: %+.2fcm/s\n"
+        "    target speed: %+.2fcm/s\n"
+        "    distance: %+.2fcm (%d raw)\n"
+        "    saved: %+.2fcm\n"
         "  Right:\n"
-        "    power: %f (%d duty)\n"
-        "    speed: %fcm/s\n"
-        "    target speed: %fcm/s\n"
-        "    distance: %fcm (%d raw)\n"
-        "    saved: %fcm\n"
+        "    power: %+.2f (%d duty)\n"
+        "    speed: %+.2fcm/s\n"
+        "    target speed: %+.2fcm/s\n"
+        "    distance: %+.2fcm (%d raw)\n"
+        "    saved: %+.2fcm\n"
 
         "\n"
 
@@ -147,7 +147,7 @@ void Robot::tick(uint32_t frame, uint32_t delay) {
         motion_controller.tick(delay);
     }
     
-    if (frame % 32 == 0) {
+    if (frame % 8 == 0) {
         print_status(delay);
     }
 }
